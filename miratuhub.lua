@@ -47,7 +47,6 @@ walkspeedButton.MouseButton1Click:Connect(function()
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
 end)
 
--- Button 3: Jumppower 200
 local jumppowerButton = buttonTemplate:Clone()
 jumppowerButton.Text = "Super Jump"
 jumppowerButton.Parent = buttonFrame
@@ -56,7 +55,6 @@ jumppowerButton.MouseButton1Click:Connect(function()
     game.Players.LocalPlayer.Character.Humanoid.JumpPower = 200
 end)
 
--- Close button
 local closeButton = Instance.new("TextButton")
 closeButton.Size = UDim2.new(0, 30, 0, 30)
 closeButton.Position = UDim2.new(1, -40, 0, 10)
@@ -70,7 +68,6 @@ closeButton.MouseButton1Click:Connect(function()
     mainFrame:Destroy()
 end)
 
--- Make the frame draggable
 local dragging = false
 local dragInput
 local dragStart
