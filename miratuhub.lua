@@ -159,6 +159,40 @@ unbangButton.MouseButton1Click:Connect(function()
     end
 end)
 
+local swimButton = buttonTemplate:Clone()
+swimButton.Text = "Swim"
+swimButton.Parent = buttonFrame
+swimButton.Position = UDim2.new(0, 10, 0, 360)
+swimButton.MouseButton1Click:Connect(function()
+    local speaker = game.Players.LocalPlayer
+    local character = speaker.Character
+    local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+    local swimming = false
+    local oldgrav = workspace.Gravity
+    local gravReset = nil
+    local swimDied = function()
+        workspace.Gravity = oldgrav
+        swimming = false
+    end
+    local enums = Enum.HumanoidStateType:GetEnumItems()
+    table.remove(enums, table.find(enums, Enum.HumanoidStateType.None))
+    for i, v in pairs(enums) do
+        humanoid:SetStateEnabled(v, false)
+    end
+    humanoid:ChangeState(Enum.HumanoidStateType.Swimming)
+    local swimbeat = RunService.Heartbeat:Connect(function()
+        pcall(function()
+            speaker.Character.HumanoidRootPart.Velocity = ((humanoid.MoveDirection ~= Vector3.new() or UserInputService:IsKeyDown(Enum.KeyCode.Space)) and speaker.Character.HumanoidRootPart.Velocity or Vector3.new())
+        end)
+    end)
+    swimming = true
+end)
+
+local unswimButton = buttonTemplate:Clone()
+unswimButton.Text = "Unswim"
+unswimButton.Parent = buttonFrame
+unswimButton.Position = UDim2.new(0, 10, 0, 390)
+
 local closeButton = Instance.new("TextButton")
 closeButton.Size = UDim2.new(0, 30, 0, 30)
 closeButton.Position = UDim2.new(1, -40, 0, 10)
