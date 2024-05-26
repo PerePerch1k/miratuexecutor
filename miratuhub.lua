@@ -32,7 +32,7 @@ buttonTemplate.BackgroundColor3 = Color3.new(0, 0, 0)
 buttonTemplate.BackgroundTransparency = 0.5
 
 local killButton = buttonTemplate:Clone()
-killButton.Text = "Suicide"
+killButton.Text = "Kill"
 killButton.Parent = buttonFrame
 killButton.Position = UDim2.new(0, 10, 0, 10)
 killButton.MouseButton1Click:Connect(function()
@@ -40,7 +40,7 @@ killButton.MouseButton1Click:Connect(function()
 end)
 
 local walkspeedButton = buttonTemplate:Clone()
-walkspeedButton.Text = "Super Speed"
+walkspeedButton.Text = "Walkspeed 100"
 walkspeedButton.Parent = buttonFrame
 walkspeedButton.Position = UDim2.new(0, 10, 0, 50)
 walkspeedButton.MouseButton1Click:Connect(function()
@@ -48,11 +48,115 @@ walkspeedButton.MouseButton1Click:Connect(function()
 end)
 
 local jumppowerButton = buttonTemplate:Clone()
-jumppowerButton.Text = "Super Jump"
+jumppowerButton.Text = "Jumppower 200"
 jumppowerButton.Parent = buttonFrame
 jumppowerButton.Position = UDim2.new(0, 10, 0, 90)
 jumppowerButton.MouseButton1Click:Connect(function()
     game.Players.LocalPlayer.Character.Humanoid.JumpPower = 200
+end)
+
+local bangButton = buttonTemplate:Clone()
+bangButton.Text = "Bang"
+bangButton.Parent = buttonFrame
+bangButton.Position = UDim2.new(0, 10, 0, 130)
+bangButton.MouseButton1Click:Connect(function()
+    local speaker = game.Players.LocalPlayer
+    local humanoid = speaker.Character:FindFirstChildWhichIsA("Humanoid")
+    bangAnim = Instance.new("Animation")
+    bangAnim.AnimationId = not r15(speaker) and "rbxassetid://148840371" or "rbxassetid://5918726674"
+    bang = humanoid:LoadAnimation(bangAnim)
+    bang:Play()
+end)
+
+local clearWeaponsButton = buttonTemplate:Clone()
+clearWeaponsButton.Text = "Clear all weapons"
+clearWeaponsButton.Parent = buttonFrame
+clearWeaponsButton.Position = UDim2.new(0, 10, 0, 170)
+clearWeaponsButton.MouseButton1Click:Connect(function()
+    local character = game.Players.LocalPlayer.Character
+    for _, child in ipairs(character:GetChildren()) do
+        if child:IsA("Tool") then
+            child:Destroy()
+        end
+    end
+end)
+
+local freezeButton = buttonTemplate:Clone()
+freezeButton.Text = "Freeze"
+freezeButton.Parent = buttonFrame
+freezeButton.Position = UDim2.new(0, 10, 0, 210)
+freezeButton.MouseButton1Click:Connect(function()
+    local character = game.Players.LocalPlayer.Character
+    local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    local rootPartPos = rootPart.Position
+    humanoid.PlatformStand = true
+    while wait(0.1) do
+        humanoid.PlatformStand = true
+        rootPart.Position = rootPartPos
+    end
+end)
+
+local teleportButton = buttonTemplate:Clone()
+teleportButton.Text = "Teleport"
+teleportButton.Parent = buttonFrame
+teleportButton.Position = UDim2.new(0, 10, 0, 250)
+teleportButton.MouseButton1Click:Connect(function()
+    local character = game.Players.LocalPlayer.Character
+    local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    local playerGui = game.Players.LocalPlayer:FindFirstChild("PlayerGui")
+    local textBox = Instance.new("TextBox")
+    textBox.Size = UDim2.new(0, 300, 0, 20)
+    textBox.Font = Enum.Font.SourceSans
+    textBox.FontSize = Enum.FontSize.Size18
+    textBox.Text = "Enter position (X, Y, Z)"
+    textBox.Parent = playerGui
+    local okButton = Instance.new("TextButton")
+    okButton.Size = UDim2.new(0, 50, 0, 20)
+    okButton.Font = Enum.Font.SourceSans
+    okButton.FontSize = Enum.FontSize.Size18
+    okButton.Text = "OK"
+    okButton.TextColor3 = Color3.new(1, 1, 1)
+    okButton.BackgroundColor3 = Color3.new(0, 0, 0)
+    okButton.BackgroundTransparency = 0.5
+    okButton.Parent = playerGui
+    okButton.Position = UDim2.new(0, 310, 0, 20)
+    okButton.MouseButton1Click:Connect(function()
+        local coords = {}
+        for coord in textBox.Text:gmatch("[%-%d%.]+") do
+            table.insert(coords, tonumber(coord))
+        end
+        if #coords == 3 then
+            rootPart.Position = Vector3.new(coords[1], coords[2], coords[3])
+        end
+        textBox:Destroy()
+        okButton:Destroy()
+    end)
+end)
+
+local godButton = buttonTemplate:Clone()
+godButton.Text = "GOD mode"
+godButton.Parent = buttonFrame
+godButton.Position = UDim2.new(0, 10, 0, 290)
+godButton.MouseButton1Click:Connect(function()
+    local character = game.Players.LocalPlayer.Character
+    local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+    humanoid.MaxHealth = math.huge
+    humanoid.Health = math.huge
+end)
+
+local unbangButton = buttonTemplate:Clone()
+unbangButton.Text = "Unbang"
+unbangButton.Parent = buttonFrame
+unbangButton.Position = UDim2.new(0, 10, 0, 330)
+unbangButton.MouseButton1Click:Connect(function()
+    if bangDied then
+        bangDied:Disconnect()
+        bang:Stop()
+        bangAnim:Destroy()
+        bangLoop:Disconnect()
+    end
 end)
 
 local closeButton = Instance.new("TextButton")
