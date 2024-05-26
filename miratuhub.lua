@@ -162,7 +162,7 @@ end)
 local swimButton = buttonTemplate:Clone()
 swimButton.Text = "Swim"
 swimButton.Parent = buttonFrame
-swimButton.Position = UDim2.new(0, 10, 0, 360)
+swimButton.Position = UDim2.new(0, 10, 0, 370)
 swimButton.MouseButton1Click:Connect(function()
     local speaker = game.Players.LocalPlayer
     local character = speaker.Character
@@ -191,7 +191,7 @@ end)
 local unswimButton = buttonTemplate:Clone()
 unswimButton.Text = "Unswim"
 unswimButton.Parent = buttonFrame
-unswimButton.Position = UDim2.new(0, 10, 0, 390)
+unswimButton.Position = UDim2.new(0, 10, 0, 410)
 
 local closeButton = Instance.new("TextButton")
 closeButton.Size = UDim2.new(0, 30, 0, 30)
