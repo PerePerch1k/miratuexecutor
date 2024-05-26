@@ -17,7 +17,7 @@ titleLabel.TextColor3 = Color3.new(1, 1, 1)
 titleLabel.Parent = mainFrame
 
 local buttonFrame = Instance.new("Frame")
-buttonFrame.Size = UDim2.new(0, 580, 0, 420)
+buttonFrame.Size = UDim2.new(0, 580, 0, 450)
 buttonFrame.Position = UDim2.new(0, 10, 0, 40)
 buttonFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 buttonFrame.BackgroundTransparency = 0.5
