@@ -1,5 +1,4 @@
 import sys
-import struct
 import ctypes
 
 class MODULEINFO(ctypes.Structure):
@@ -33,18 +32,14 @@ def get_module_base_address(process_handle, module_name):
 
     module_base_address = None
     for i in range(module_count.value):
-        module_handle = module_handles[i]
-        size_ptr = ctypes.c_ulong(0)
-        result = ctypes.windll.psapi.GetModuleBaseNameW(ctypes.c_void_p(process_handle), module_handle, None, ctypes.byref(size_ptr), ctypes.c_int(0))
-        if not result:
+        module_handle = ctypes.c_void_p(module_handles[i])
+        module_name_ptr = ctypes.create_unicode_buffer(256)
+        result = ctypes.windll.psapi.GetModuleBaseNameW(ctypes.c_void_p(process_handle), module_handle, module_name_ptr, ctypes.sizeof(module_name_ptr) // ctypes.sizeof(ctypes.c_wchar))
+        if result == 0:
             continue
 
-        module_name_ptr = ctypes.create_string_buffer(size_ptr.value)
-        result = ctypes.windll.psapi.GetModuleBaseNameW(ctypes.c_void_p(process_handle), module_handle, module_name_ptr, ctypes.byref(size_ptr), ctypes.c_int(1))
-        if not result:
-            continue
-
-        module_name_str = module_name_ptr.value.decode("utf-16le")
+        module_name_str = module_name_ptr.value
+        print(f"Found module: {module_name_str}")
         if module_name_str == module_name:
             module_base_address = module_handle
             break
@@ -60,7 +55,7 @@ def execute_lua_script(process_handle, lua_script):
     if not module_base_address:
         raise Exception(f"Module '{dll_name}' not found.")
 
-    export_name ="LuaExecute"
+    export_name = "LuaExecute"
     export_address = find_pattern(process_handle, module_base_address, f"{export_name}:")
     if not export_address:
         raise Exception(f"Export '{export_name}' not found in '{dll_name}'.")
@@ -75,18 +70,20 @@ def find_pattern(process_handle, module_base_address, pattern):
     ctypes.windll.psapi.GetModuleInformation(ctypes.c_void_p(process_handle), module_base_address, ctypes.byref(module_info), ctypes.sizeof(module_info))
 
     start_address = module_base_address
-    end_address = module_base_address + module_info.SizeOfImage
+    end_address = module_base_address.value + module_info.SizeOfImage
 
     for i in range(0, module_info.SizeOfImage - len(pattern), 1):
-        current_address = start_address + i
-        data = ctypes.windll.kernel32.ReadProcessMemory(ctypes.c_void_p(process_handle), ctypes.c_void_p(current_address), ctypes.c_char * len(pattern), None)
-        if data.raw == pattern.encode("utf-8"):
-            return current_address
+        current_address = start_address.value + i
+        data = (ctypes.c_char * len(pattern))()
+        bytes_read = ctypes.c_size_t()
+        ctypes.windll.kernel32.ReadProcessMemory(ctypes.c_void_p(process_handle), ctypes.c_void_p(current_address), data, len(pattern), ctypes.byref(bytes_read))
+        if bytes(data) == pattern.encode("utf-8"):
+            return ctypes.c_void_p(current_address)
 
     raise Exception(f"Pattern '{pattern}' not found.")
 
 def main():
-    if len(sys.argv)!= 2:
+    if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} <process_id>")
         return
 
@@ -96,7 +93,7 @@ def main():
     if not process_handle:
         raise Exception(f"Failed to open process {process_id}.")
 
-    lua_script = "print('Hello, World!')"
+    lua_script = "print('Successfully attached and executed. MIRATU EXECUTOR')"
     execute_lua_script(process_handle, lua_script)
 
     ctypes.windll.kernel32.CloseHandle(process_handle)
